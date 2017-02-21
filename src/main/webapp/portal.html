@@ -69,14 +69,15 @@ and open the template in the editor.
             </table></div>
             <table class="table-striped col-md-6">
                 
-                <tr ng-class="result" ng-repeat="(key, value) in results.data.highlighting">
+                <tr class="result" ng-repeat="(key, value) in results.data.highlighting">
                     <td>
                         
                             <div class="file">{{key}}</div>
+                            <div class="file">Score:{{value.score}}</div>
                             <div class="col-md-12 container" ng-repeat="highlight in value">
                                 <p ng-bind-html="highlight"></p>
                             </div>
-                       
+                        
                     </td>
                 </tr>
             </table>

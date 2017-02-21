@@ -12,12 +12,16 @@ and open the template in the editor.
 
 em{
     font-weight: bold;
+    text-decoration: underline;
 }
 .file{
-    font-size: large;
+    font-size: inherit;
 }
 .result{
     border:activeborder;
     border-width: 2px;
-    border-style:solid;
+    border-style: groove;
+    margin: 5px;
+    padding: 5px;
+    
 }

@@ -20,7 +20,7 @@ var main = app.controller("main", ['$scope','$log','$http','$sanitize',function(
       
       var req = {
         method: 'POST',
-        url: 'http://localhost:8983/solr/collection1/query?hl=on&hl.method=fastVector&hl.fl=content&&json.facet.content_type={type:terms,field:content_type,limit:15}'
+        url: 'http://100.6.103.222:8983/solr/collection1/query?fl=*,score&hl=on&hl.method=fastVector&hl.fl=content&&json.facet.content_type={type:terms,field:content_type,limit:15}'
         ,
         headers: {
           'Content-Type': 'application/json'
@@ -33,6 +33,13 @@ var main = app.controller("main", ['$scope','$log','$http','$sanitize',function(
       $http(req).then(
               function(response)
                     { 
+                        for(var name in response.data.response.docs){
+                           response.data.highlighting[response.data.response.docs[name].id].score =  response.data.response.docs[name].score;
+                            
+                        }
+                            
+                        
+                            
                         $log.info(response);
                         $scope.showsuccess=true;
                         $scope.showfailure=false;  
