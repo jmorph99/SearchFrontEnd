@@ -6,7 +6,19 @@
 
 
 var app = angular.module('app',['ngTagsInput','ngSanitize']);
-
+/*
+$http.get('/my-url-that-does-not-exist')
+.then(function (result0) {
+console.log('1');
+}, function (result0) {
+console.log('2');
+})
+.then(function (result1) {
+console.log('A')
+}, function (result1) {
+console.log('B')
+});
+*/
 var main = app.controller("main", ['$scope','$log','$http','$sanitize',function($scope,$log,$http,$sanitize){
     $scope.results = null;
     $scope.showsuccess=false;
@@ -14,18 +26,23 @@ var main = app.controller("main", ['$scope','$log','$http','$sanitize',function(
     $scope.show=false;
     $scope.success="";
     $scope.failure="";
-    $scope.tags = [];  
+    
     $scope.doSearch = function(){
       
       
       var req = {
         method: 'POST',
-        url: 'http://100.6.103.222:8983/solr/collection1/query?fl=*,score&hl=on&hl.method=fastVector&hl.fl=content&&json.facet.content_type={type:terms,field:content_type,limit:15}'
+        url: 'http://localhost:9200/blogs/_search'
         ,
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+          'Access-Control-Allow-Origin':'*',
+          'Access-Control-Allow-Methods': 'GET,HEAD,OPTIONS,POST,PUT'
+          
         },
-        data:{ 'query': 'content:' + $scope.query + ''}
+        data:{ "query": "{\"match_phrase\": {\"content\": \"elastic stack\"}},highlight\": {\"fields\": {\"title\" : {},\"content\" : {}},\"require_field_match\": true,\"pre_tags\": [\"<b>\"],\"post_tags\": [\"</b>\"]}" }
+        //data:{ "query": "{\"match_all\": {}}" }
        };
       
       $log.info(req);
@@ -33,10 +50,11 @@ var main = app.controller("main", ['$scope','$log','$http','$sanitize',function(
       $http(req).then(
               function(response)
                     { 
-                        for(var name in response.data.response.docs){
-                           response.data.highlighting[response.data.response.docs[name].id].score =  response.data.response.docs[name].score;
-                            
-                        }
+                        //a = 0;
+                        //for(var name in response.data.hits.hit){
+                        //   response.data.highlighting[response.data.response.docs[name].id].score =  response.data.response.docs[name].score;
+                        //    
+                        //}
                             
                         
                             
@@ -49,8 +67,8 @@ var main = app.controller("main", ['$scope','$log','$http','$sanitize',function(
                         var receiveDate = (new Date()).getTime();
                         var responseTimeMs = receiveDate - sendDate;
                         //$log.info($sanitize.trustAsHtml('Total Docs:' + response.data.total + "<br/>Response Time" + responseTimeMs + "MS"));
-                        $scope.message = ('Total Docs:' + response.data.response.numFound + "<br/>Response :" + responseTimeMs + "MS");
-                        $scope.tags.push({text:$scope.query});
+                        $scope.message = ('Total Docs:' + $scope.results.data.hits.total + "<br/>Response :" + responseTimeMs + "MS");
+                        //$scope.tags.push({text:$scope.query});
                         
                         
                   }, 

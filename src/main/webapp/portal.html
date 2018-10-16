@@ -14,9 +14,7 @@ and open the template in the editor.
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-sanitize.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-animate.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-cookies.min.js"></script>
-        <script src="elasticsearch-js/elasticsearch.angular.min.js" type="text/javascript"></script>
-        <script src="elasticsearch-js/elasticsearch.jquery.min.js" type="text/javascript"></script>
-        <script src="elasticsearch-js/elasticsearch.min.js" type="text/javascript"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/ng-tags-input/3.0.0/ng-tags-input.min.js"></script>
         <link rel="stylesheet"  href="https://cdnjs.cloudflare.com/ajax/libs/ng-tags-input/3.0.0/ng-tags-input.min.css"/>
         <link href="CSS/portal.css" rel="stylesheet" type="text/css"/>
@@ -64,25 +62,29 @@ and open the template in the editor.
             
             
             <div class="row">
-            <!--div class="col-md-3"><table class="table-striped col-md-3">
-                    <tr><td colspan="2" class="badge">Extension</td></tr>
-                <tr ng-class="result" ng-repeat="facet in results.data.facets.content_type.buckets">
+                <div class="col-md-3"><table class="table-striped col-md-3">
+                    <tr><td colspan="2" class="badge">&nbsp;</td></tr>
+                <!--tr ng-class="result" ng-repeat="facet in results.data.facets.content_type.buckets">
                     <td>{{facet.val}}</td>
                     <td>{{facet.count}}</td>
-                </tr>
-            </table></div-->
+                </tr-->
+                
+            </table></div>
             <table class="table-striped col-md-6">
                 
                 <tr class="result" ng-repeat="hit in results.data.hits.hits">
                     <td>
                             
-                            <div class="well">
+                            <div class="well" >
                                 Title:{{hit._source.title}} <br/>
                                 Score:{{hit._score}} <br/>
-                                Author:{{hit._source.author}} 
+                                Author:{{hit._source.author}}
                             </div>
-                            <div class="col-md-12 container" ng-repeat="highlight in hit.hightlight.content">
-                                <p ng-bind-html="highlight"></p>
+                            <div class="col-md-12 container" ng-repeat="hl in hit.highlight.title  track by $index">
+                                <p ng-bind-html="hl">{{ hl }}</p>
+                            </div>
+                            <div class="col-md-12 container" ng-repeat="hl in hit.highlight.content  track by $index">
+                                <p ng-bind-html="hl">{{ hl }}</p>
                             </div>
                         
                     </td>
