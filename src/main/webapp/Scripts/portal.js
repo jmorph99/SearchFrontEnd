@@ -21,28 +21,78 @@ console.log('B')
 */
 var main = app.controller("main", ['$scope','$log','$http','$sanitize',function($scope,$log,$http,$sanitize){
     $scope.results = null;
+    $scope.query = '';
     $scope.showsuccess=false;
     $scope.showfailure=false;
     $scope.show=false;
     $scope.success="";
     $scope.failure="";
+    $scope.spanQuery = '';
+    //$scope.$watch($scope.spanQuery);
+    //$scope.$watch('query', function(a,b){ console.info(b    )});
+    var sendDate = (new Date()).getTime();
+    $scope.getQuery = function(){
+        var req1 = {
+        method: 'POST',
+        url: 'http://' + location.hostname + ':8084/FrontEndSearch/query.jsp'
+        ,
+        headers: { 
+          'Content-Type': 'application/text',
+          'Allow-Control-Allow-Origin':'*'
+          
+        },
+        data: $scope.query
+            //'query':'"match_phrase":{"content": "elastic stack"}},"highlight": {"fields": {"title" : {}, "content" : {}},"require_field_match": true,"pre_tags": ["<b>"],"post_tags": ["</b>"]'}
+        
+       };
+      $http(req1).then(
+              function(response)
+                    { 
+                        $scope.showsuccess=true;
+                        $scope.showfailure=false; 
+                        $scope.show = true;
+                        $scope.spanQuery = response.data;
+                        $log.info(response.data);
+                        $scope.comsearch(response.data);
+                        
+                        
+                  }, 
+              function(response)
+                    {   
+                        $log.error(response);
+                        $scope.showsuccess=false;
+                        $scope.showfailure=true; 
+                        $scope.show = true;
+                        $scope.results = null;
+                        var receiveDate = (new Date()).getTime();
+                        var responseTimeMs = receiveDate - sendDate;
+                        $scope.message = ('Unable to parse query "' + $scope.query + '" <br/>Response Time' + responseTimeMs + 'MS');
+                    }
+              );  
+        
+    };
+    $scope.doSearch = function()
+    {
+       $scope.getQuery();
+       
+       
+    };
     
-    $scope.doSearch = function(){
-      
+    $scope.comsearch = function(value){
       
       var req = {
         method: 'POST',
-        url: 'http://localhost:9200/blogs/_search'
+        url: 'http://' + location.hostname + ':9200/blogs/_search'
         ,
-        headers: {
+        headers: { 
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
-          'Access-Control-Allow-Origin':'*',
-          'Access-Control-Allow-Methods': 'GET,HEAD,OPTIONS,POST,PUT'
+          'Allow-Control-Allow-Origin':'*'
           
         },
-        data:{ "query": "{\"match_phrase\": {\"content\": \"elastic stack\"}},highlight\": {\"fields\": {\"title\" : {},\"content\" : {}},\"require_field_match\": true,\"pre_tags\": [\"<b>\"],\"post_tags\": [\"</b>\"]}" }
-        //data:{ "query": "{\"match_all\": {}}" }
+         data:  JSON.stringify(value)  //{"query": {"match_phrase": {"content": "elastic stack"}},"highlight": {"fields": {"title" : {},"content" : {}},"require_field_match": true,"pre_tags": ["<b>"],"post_tags": ["</b>"]}}'
+            //'query':'"match_phrase":{"content": "elastic stack"}},"highlight": {"fields": {"title" : {}, "content" : {}},"require_field_match": true,"pre_tags": ["<b>"],"post_tags": ["</b>"]'}
+        
+        
        };
       
       $log.info(req);
@@ -58,7 +108,7 @@ var main = app.controller("main", ['$scope','$log','$http','$sanitize',function(
                             
                         
                             
-                        $log.info(response);
+                            $log.info(response);
                         $scope.showsuccess=true;
                         $scope.showfailure=false;  
                         $scope.show = true;

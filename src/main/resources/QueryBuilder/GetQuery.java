@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author murphy
  */
-@WebServlet(urlPatterns = {"/GetQuery"})
+@WebServlet(name = "GetQuery", urlPatterns = {"/GetQuery"})
 public class GetQuery extends HttpServlet {
 
     /**
